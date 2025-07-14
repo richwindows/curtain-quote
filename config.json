@@ -1,0 +1,35 @@
+{
+  "discount": {
+    "Discount": 45
+  },
+  "productPrices": {
+    "Roller Shades": 0,
+    "Zebra Shades": 0,
+    "Honey Comb Shades": 0
+  },
+  "valancePrices": {
+    "V2": 0,
+    "S2": 0,
+    "25": 0,
+    "38": 0,
+    "45": 0
+  },
+  "valanceColorPrices": {
+    "White": 0,
+    "Gray": 0,
+    "Black": 0,
+    "Beige": 0,
+    "Wrapped": 30
+  },
+  "bottomRailPrices": {
+    "Type A": 0,
+    "Type C": 0,
+    "None": 0
+  },
+  "controlPrices": {
+    "bead chain": 20,
+    "cordless": 0,
+    "battery-motorized": 0,
+    "wired-motorized": 0
+  }
+} 
