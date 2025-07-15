@@ -69,11 +69,19 @@ function saveConfig(config) {
 export async function GET() {
   try {
     const config = loadConfig();
-    return NextResponse.json(config);
+    
+    // 创建响应并添加缓存控制头，配置数据应该实时更新
+    const response = NextResponse.json(config);
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    
+    return response;
   } catch (error) {
     console.error('获取配置失败:', error);
     return NextResponse.json(
-      { error: '服务器错误' },
+      { error: '获取配置失败' },
       { status: 500 }
     );
   }
@@ -94,15 +102,19 @@ export async function POST(request) {
       }
     }
     
-    // 保存配置
-    if (saveConfig(newConfig)) {
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json(
-        { error: '保存配置失败' },
-        { status: 500 }
-      );
-    }
+    // 保存新配置
+    fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
+    
+    const response = NextResponse.json({ 
+      success: true, 
+      message: '配置保存成功' 
+    });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    
+    return response;
   } catch (error) {
     console.error('更新配置失败:', error);
     return NextResponse.json(

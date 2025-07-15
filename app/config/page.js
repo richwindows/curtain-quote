@@ -23,7 +23,12 @@ export default function ConfigPage() {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch('/api/config');
+      const response = await fetch('/api/config', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -38,8 +43,10 @@ export default function ConfigPage() {
     try {
       const response = await fetch('/api/config', {
         method: 'POST',
+        cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         body: JSON.stringify(config),
       });

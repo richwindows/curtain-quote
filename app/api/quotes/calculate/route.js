@@ -20,10 +20,17 @@ export async function POST(request) {
     // 计算价格
     const price = calculatePrice(quoteData);
     
-    return NextResponse.json({
+    // 创建响应并添加强制不缓存的头
+    const response = NextResponse.json({
       success: true,
       price: price
     });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    
+    return response;
     
   } catch (error) {
     console.error('Price calculation error:', error);

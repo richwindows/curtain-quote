@@ -98,6 +98,10 @@ export default function QuotesPage() {
     try {
       const response = await fetch(`/api/quotes?quoteNumber=${quoteToDelete.quote_number}`, {
         method: 'DELETE',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
       });
       
       if (response.ok) {

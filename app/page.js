@@ -42,7 +42,12 @@ export default function CreateQuotePage() {
 
   const fetchOptions = async () => {
     try {
-      const response = await fetch('/api/config');
+      const response = await fetch('/api/config', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const config = await response.json();
       setOptions({
         products: Object.keys(config.productPrices || {}),
@@ -61,8 +66,10 @@ export default function CreateQuotePage() {
     try {
       const response = await fetch('/api/quotes/calculate', {
         method: 'POST',
+        cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         body: JSON.stringify(itemData),
       });
@@ -78,7 +85,12 @@ export default function CreateQuotePage() {
   const calculatePriceWithDetails = async (itemData) => {
     try {
       // 获取配置数据
-      const configResponse = await fetch('/api/config');
+      const configResponse = await fetch('/api/config', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const config = await configResponse.json();
       
       const {
@@ -244,8 +256,10 @@ export default function CreateQuotePage() {
 
       const response = await fetch('/api/quotes', {
         method: 'POST',
+        cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         body: JSON.stringify(quoteData),
       });

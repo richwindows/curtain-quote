@@ -30,12 +30,18 @@ export async function POST(request) {
       
       const totalPrice = quoteData.items.reduce((sum, item) => sum + item.totalPrice, 0);
       
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         quoteNumber: quoteNumber,
         totalPrice: totalPrice,
         itemCount: results.length
       });
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      response.headers.set('Surrogate-Control', 'no-store');
+      
+      return response;
     } else {
       // 单item模式（向后兼容）
       const requiredFields = ['width_inch', 'height_inch', 'product', 'valance', 'valance_color', 'bottom_rail', 'control', 'fabric', 'quantity'];
@@ -52,11 +58,17 @@ export async function POST(request) {
       const result = await saveQuote(quoteData);
       const totalPrice = quoteData.unitPrice * parseInt(quoteData.quantity);
       
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         quoteNumber: result.quoteNumber,
         totalPrice: totalPrice
       });
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      response.headers.set('Surrogate-Control', 'no-store');
+      
+      return response;
     }
     
   } catch (error) {
@@ -75,7 +87,15 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit')) || 10;
     
     const result = await getQuotesByPage(page, limit);
-    return NextResponse.json(result);
+    
+    // 创建响应并添加强制不缓存的头
+    const response = NextResponse.json(result);
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    
+    return response;
   } catch (error) {
     console.error('Get quotes error:', error);
     return NextResponse.json(
@@ -101,10 +121,16 @@ export async function DELETE(request) {
     const success = await deleteQuote(quoteNumber);
     
     if (success) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: '报价单删除成功'
       });
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      response.headers.set('Surrogate-Control', 'no-store');
+      
+      return response;
     } else {
       return NextResponse.json(
         { error: '报价单不存在或删除失败' },

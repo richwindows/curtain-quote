@@ -3,37 +3,31 @@ import { getQuoteDetails } from '../../../../../lib/database';
 
 export async function GET(request, { params }) {
   try {
-    console.log('API called with params:', params);
     const quoteNumber = parseInt(params.quoteNumber);
-    console.log('Parsed quote number:', quoteNumber);
     
     if (!quoteNumber) {
-      console.log('Invalid quote number provided');
       return NextResponse.json(
         { error: '无效的报价单号码' },
         { status: 400 }
       );
     }
     
-    console.log('Calling getQuoteDetails with quote number:', quoteNumber);
     const quoteDetails = await getQuoteDetails(quoteNumber);
-    console.log('Quote details from database:', quoteDetails);
     
     if (quoteDetails.length === 0) {
-      console.log('No quote details found for quote number:', quoteNumber);
       return NextResponse.json(
         { error: '报价单不存在' },
         { status: 404 }
       );
     }
     
-    console.log('Returning quote details:', quoteDetails);
-    
-    // 创建响应并添加缓存控制头
+    // 创建响应并添加Vercel兼容的强制不缓存头
     const response = NextResponse.json(quoteDetails);
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('Vercel-CDN-Cache-Control', 'no-store');
     
     return response;
   } catch (error) {
