@@ -1,4 +1,5 @@
 import './globals.css'
+import UserNav from './components/UserNav'
 
 export const metadata = {
   title: '窗帘报价管理系统',
@@ -38,6 +39,9 @@ export default function RootLayout({ children }) {
                   >
                     系统配置
                   </a>
+                  <div className="border-l border-gray-200 ml-4 pl-4">
+                    <UserNav />
+                  </div>
                 </div>
               </div>
             </div>
