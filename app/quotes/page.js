@@ -23,10 +23,12 @@ export default function QuotesPage() {
   const fetchQuotes = async (page) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/quotes?page=${page}&limit=10`, {
+      const timestamp = Date.now();
+      const response = await fetch(`/api/quotes?page=${page}&limit=10&_t=${timestamp}`, {
         cache: 'no-store',
         headers: {
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       });
       const data = await response.json();
@@ -53,20 +55,17 @@ export default function QuotesPage() {
     setShowModal(true);
 
     try {
-      console.log('Fetching quote details for quote number:', quoteNumber);
-      const response = await fetch(`/api/quotes/by-number/${quoteNumber}`, {
+      const timestamp = Date.now();
+      const response = await fetch(`/api/quotes/by-number/${quoteNumber}?_t=${timestamp}`, {
         cache: 'no-store',
         headers: {
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       });
       const details = await response.json();
       
-      console.log('API Response status:', response.status);
-      console.log('API Response data:', details);
-      
       if (response.ok) {
-        console.log('Setting quote details:', details);
         setSelectedQuoteDetails(details);
       } else {
         console.error('Error fetching details:', details.error);
@@ -96,11 +95,13 @@ export default function QuotesPage() {
     
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/quotes?quoteNumber=${quoteToDelete.quote_number}`, {
+      const timestamp = Date.now();
+      const response = await fetch(`/api/quotes?quoteNumber=${quoteToDelete.quote_number}&_t=${timestamp}`, {
         method: 'DELETE',
         cache: 'no-store',
         headers: {
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       });
       

@@ -34,9 +34,10 @@ export async function POST(request) {
         success: true,
         quoteNumber: quoteNumber,
         totalPrice: totalPrice,
-        itemCount: results.length
+        itemCount: results.length,
+        timestamp: new Date().toISOString()
       });
-      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, proxy-revalidate');
       response.headers.set('Pragma', 'no-cache');
       response.headers.set('Expires', '0');
       response.headers.set('Surrogate-Control', 'no-store');
@@ -61,9 +62,10 @@ export async function POST(request) {
       const response = NextResponse.json({
         success: true,
         quoteNumber: result.quoteNumber,
-        totalPrice: totalPrice
+        totalPrice: totalPrice,
+        timestamp: new Date().toISOString()
       });
-      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, proxy-revalidate');
       response.headers.set('Pragma', 'no-cache');
       response.headers.set('Expires', '0');
       response.headers.set('Surrogate-Control', 'no-store');
@@ -89,11 +91,17 @@ export async function GET(request) {
     const result = await getQuotesByPage(page, limit);
     
     // 创建响应并添加强制不缓存的头
-    const response = NextResponse.json(result);
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    const response = NextResponse.json({
+      ...result,
+      timestamp: new Date().toISOString(),
+      _cacheBuster: Date.now()
+    });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('Vary', 'Authorization, Accept-Encoding');
+    response.headers.set('Last-Modified', new Date().toUTCString());
     
     return response;
   } catch (error) {
@@ -123,9 +131,10 @@ export async function DELETE(request) {
     if (success) {
       const response = NextResponse.json({
         success: true,
-        message: '报价单删除成功'
+        message: '报价单删除成功',
+        timestamp: new Date().toISOString()
       });
-      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, proxy-revalidate');
       response.headers.set('Pragma', 'no-cache');
       response.headers.set('Expires', '0');
       response.headers.set('Surrogate-Control', 'no-store');
@@ -144,4 +153,9 @@ export async function DELETE(request) {
       { status: 500 }
     );
   }
-} 
+}
+
+// 强制动态渲染，禁用所有缓存
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; 

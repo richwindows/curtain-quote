@@ -42,10 +42,12 @@ export default function CreateQuotePage() {
 
   const fetchOptions = async () => {
     try {
-      const response = await fetch('/api/config', {
+      const timestamp = Date.now();
+      const response = await fetch(`/api/config?_t=${timestamp}`, {
         cache: 'no-store',
         headers: {
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       });
       const config = await response.json();
@@ -64,14 +66,16 @@ export default function CreateQuotePage() {
 
   const calculateItemPrice = async (itemData) => {
     try {
+      const timestamp = Date.now();
       const response = await fetch('/api/quotes/calculate', {
         method: 'POST',
         cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
-        body: JSON.stringify(itemData),
+        body: JSON.stringify({...itemData, _timestamp: timestamp}),
       });
       const data = await response.json();
       return data.price || 0;
@@ -251,7 +255,8 @@ export default function CreateQuotePage() {
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
-        items: items
+        items: items,
+        _timestamp: Date.now()
       };
 
       const response = await fetch('/api/quotes', {
@@ -259,7 +264,8 @@ export default function CreateQuotePage() {
         cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         body: JSON.stringify(quoteData),
       });

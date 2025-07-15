@@ -21,13 +21,24 @@ export async function GET(request, { params }) {
       );
     }
     
-    // 创建响应并添加Vercel兼容的强制不缓存头
+    // 添加时间戳确保数据新鲜度
+    const responseData = {
+      data: quoteDetails,
+      timestamp: new Date().toISOString(),
+      _cacheBuster: Date.now()
+    };
+    
+    // 创建响应并添加强化的Vercel缓存控制头
     const response = NextResponse.json(quoteDetails);
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0');
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     response.headers.set('Surrogate-Control', 'no-store');
     response.headers.set('Vercel-CDN-Cache-Control', 'no-store');
+    response.headers.set('X-Accel-Expires', '0');
+    response.headers.set('Vary', 'Authorization, Accept-Encoding');
+    response.headers.set('Last-Modified', new Date().toUTCString());
+    response.headers.set('ETag', `"${Date.now()}"`);
     
     return response;
   } catch (error) {
@@ -37,4 +48,9 @@ export async function GET(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}
+
+// 添加强制不缓存的导出配置
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
