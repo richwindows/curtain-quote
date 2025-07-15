@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getConfig, saveConfig } from '../../../lib/database.js';
 
-// 配置文件路径
-const configPath = path.join(process.cwd(), 'config.json');
-
-// 默认配置
+// 默认配置（作为后备）
 const defaultConfig = {
   discount: {
     'Discount': 45
@@ -42,40 +38,24 @@ const defaultConfig = {
   }
 };
 
-// 读取配置
-function loadConfig() {
-  try {
-    if (fs.existsSync(configPath)) {
-      const configData = fs.readFileSync(configPath, 'utf8');
-      return JSON.parse(configData);
-    }
-  } catch (error) {
-    console.error('读取配置文件失败:', error);
-  }
-  return defaultConfig;
-}
-
-// 保存配置
-function saveConfig(config) {
-  try {
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
-    return true;
-  } catch (error) {
-    console.error('保存配置文件失败:', error);
-    return false;
-  }
-}
+export const dynamic = 'force-dynamic'; // 禁用缓存
 
 export async function GET() {
   try {
-    const config = loadConfig();
+    // 从数据库获取配置
+    const config = await getConfig();
+    
+    // 如果数据库中没有配置数据，返回默认配置
+    const responseData = config || defaultConfig;
     
     // 创建响应并添加缓存控制头，配置数据应该实时更新
-    const response = NextResponse.json(config);
+    const response = NextResponse.json(responseData);
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('Vercel-CDN-Cache-Control', 'no-store');
+    response.headers.set('X-Accel-Expires', '0');
     
     return response;
   } catch (error) {
@@ -102,8 +82,15 @@ export async function POST(request) {
       }
     }
     
-    // 保存新配置
-    fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
+    // 保存配置到数据库
+    const saveSuccess = await saveConfig(newConfig);
+    
+    if (!saveSuccess) {
+      return NextResponse.json(
+        { error: '保存配置到数据库失败' },
+        { status: 500 }
+      );
+    }
     
     const response = NextResponse.json({ 
       success: true, 
@@ -113,6 +100,8 @@ export async function POST(request) {
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('Vercel-CDN-Cache-Control', 'no-store');
+    response.headers.set('X-Accel-Expires', '0');
     
     return response;
   } catch (error) {

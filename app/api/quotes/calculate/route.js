@@ -18,7 +18,7 @@ export async function POST(request) {
     }
 
     // 计算价格
-    const price = calculatePrice(quoteData);
+    const price = await calculatePrice(quoteData);
     
     // 创建响应并添加强制不缓存的头
     const response = NextResponse.json({
