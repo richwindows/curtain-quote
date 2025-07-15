@@ -84,7 +84,7 @@ export async function POST(request) {
     const newConfig = await request.json();
     
     // 验证配置格式
-    const requiredKeys = ['productPrices', 'valancePrices', 'valanceColorPrices', 'bottomRailPrices', 'controlPrices', 'chainPrices'];
+    const requiredKeys = ['discount', 'productPrices', 'valancePrices', 'valanceColorPrices', 'bottomRailPrices', 'controlPrices'];
     for (const key of requiredKeys) {
       if (!newConfig[key] || typeof newConfig[key] !== 'object') {
         return NextResponse.json(

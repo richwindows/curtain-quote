@@ -121,7 +121,7 @@ export default function QuotesPage() {
     // 将英寸转换为平方米: 1 inch = 0.0254 meters
     const areaSquareInches = parseFloat(width) * parseFloat(height);
     const areaSquareMeters = areaSquareInches * 0.0254 * 0.0254;
-    return `${width}" × ${height}" (${areaSquareMeters.toFixed(4)} ㎡)`;
+    return `${parseFloat(width).toFixed(3)}" × ${parseFloat(height).toFixed(3)}" (${areaSquareMeters.toFixed(4)} ㎡)`;
   };
 
   if (isLoading && quotes.length === 0) {

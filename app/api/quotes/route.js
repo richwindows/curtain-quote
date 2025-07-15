@@ -91,10 +91,7 @@ export async function DELETE(request) {
     const quoteNumberParam = searchParams.get('quoteNumber');
     const quoteNumber = parseInt(quoteNumberParam);
     
-    console.log('Delete request - raw param:', quoteNumberParam, 'parsed:', quoteNumber);
-    
     if (!quoteNumber || isNaN(quoteNumber)) {
-      console.log('Invalid quote number provided');
       return NextResponse.json(
         { error: `缺少有效的报价单号码，收到：${quoteNumberParam}` },
         { status: 400 }

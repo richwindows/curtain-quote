@@ -105,10 +105,14 @@ export default function CreateQuotePage() {
       // 计算面积（平方米）
       const areaSquareMeters = widthMeters * heightMeters;
       
+      // 面积小于1平方米按1平方米计算
+      const billableArea = Math.max(areaSquareMeters, 1);
+      
       console.log('尺寸转换:');
-      console.log(`  宽度: ${width_inch}" = ${widthMeters.toFixed(4)}m`);
-      console.log(`  高度: ${height_inch}" = ${heightMeters.toFixed(4)}m`);
-      console.log(`  面积: ${areaSquareMeters.toFixed(4)} 平方米`);
+      console.log(`  宽度: ${parseFloat(width_inch).toFixed(3)}" = ${widthMeters.toFixed(4)}m`);
+      console.log(`  高度: ${parseFloat(height_inch).toFixed(3)}" = ${heightMeters.toFixed(4)}m`);
+      console.log(`  实际面积: ${areaSquareMeters.toFixed(4)} 平方米`);
+      console.log(`  计费面积: ${billableArea.toFixed(4)} 平方米 ${billableArea > areaSquareMeters ? '(最小1平方米)' : ''}`);
       
       // 获取各种价格配置
       const valanceColorPrice = config.valanceColorPrices[valance_color] || 0;
@@ -133,14 +137,14 @@ export default function CreateQuotePage() {
       // 新的价格公式：成品价格 = （Fabric price * discount + valance color price）* Area + control price + motor price
       const fabricWithDiscount = fabricPrice * discountMultiplier;
       const pricePerSquareMeter = fabricWithDiscount + valanceColorPrice;
-      const areaCost = pricePerSquareMeter * areaSquareMeters;
+      const areaCost = pricePerSquareMeter * billableArea;
       const additionalCosts = controlPrice + motorPrice;
       const unitPrice = areaCost + additionalCosts;
       
       console.log('价格计算过程:');
       console.log(`  Fabric price * discount = $${parseFloat(fabricPrice).toFixed(2)} * ${discountMultiplier} = $${fabricWithDiscount.toFixed(2)}`);
       console.log(`  (Fabric with discount + valance color) = ($${fabricWithDiscount.toFixed(2)} + $${parseFloat(valanceColorPrice).toFixed(2)}) = $${pricePerSquareMeter.toFixed(2)} 每平方米`);
-      console.log(`  面积成本 = $${pricePerSquareMeter.toFixed(2)} * ${areaSquareMeters.toFixed(4)}㎡ = $${areaCost.toFixed(2)}`);
+      console.log(`  面积成本 = $${pricePerSquareMeter.toFixed(2)} * ${billableArea.toFixed(4)}㎡ = $${areaCost.toFixed(2)}`);
       console.log(`  附加成本 = Control($${parseFloat(controlPrice).toFixed(2)}) + Motor($${parseFloat(motorPrice).toFixed(2)}) = $${additionalCosts.toFixed(2)}`);
       console.log(`  单价 = $${areaCost.toFixed(2)} + $${additionalCosts.toFixed(2)} = $${unitPrice.toFixed(2)}`);
       
@@ -529,13 +533,13 @@ export default function CreateQuotePage() {
                 <label className="form-label">Width (inch) *</label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="0.001"
                   name="width_inch"
                   value={formData.width_inch}
                   onChange={handleChange}
                   className="form-input"
                   required
-                  min="0.1"
+                  min="0.001"
                 />
               </div>
 
@@ -543,13 +547,13 @@ export default function CreateQuotePage() {
                 <label className="form-label">Height (inch) *</label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="0.001"
                   name="height_inch"
                   value={formData.height_inch}
                   onChange={handleChange}
                   className="form-input"
                   required
-                  min="0.1"
+                  min="0.001"
                 />
               </div>
 
@@ -650,7 +654,7 @@ export default function CreateQuotePage() {
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.width_inch}" × {item.height_inch}"
+                      {parseFloat(item.width_inch).toFixed(3)}" × {parseFloat(item.height_inch).toFixed(3)}"
                       <div className="text-gray-500">
                         {((parseFloat(item.width_inch) * parseFloat(item.height_inch)) / 144).toFixed(2)} sq ft
                       </div>

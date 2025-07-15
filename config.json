@@ -8,11 +8,11 @@
     "Honey Comb Shades": 0
   },
   "valancePrices": {
-    "V2": 0,
-    "S2": 0,
     "25": 0,
     "38": 0,
-    "45": 0
+    "45": 0,
+    "V2": 0,
+    "S2": 0
   },
   "valanceColorPrices": {
     "White": 0,
@@ -32,4 +32,4 @@
     "battery-motorized": 0,
     "wired-motorized": 0
   }
-} 
+}
