@@ -23,7 +23,12 @@ export default function QuotesPage() {
   const fetchQuotes = async (page) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/quotes?page=${page}&limit=10`);
+      const response = await fetch(`/api/quotes?page=${page}&limit=10`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await response.json();
       
       if (page === 1) {
@@ -48,10 +53,20 @@ export default function QuotesPage() {
     setShowModal(true);
 
     try {
-      const response = await fetch(`/api/quotes/by-number/${quoteNumber}`);
+      console.log('Fetching quote details for quote number:', quoteNumber);
+      const response = await fetch(`/api/quotes/by-number/${quoteNumber}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const details = await response.json();
       
+      console.log('API Response status:', response.status);
+      console.log('API Response data:', details);
+      
       if (response.ok) {
+        console.log('Setting quote details:', details);
         setSelectedQuoteDetails(details);
       } else {
         console.error('Error fetching details:', details.error);

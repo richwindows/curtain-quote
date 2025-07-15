@@ -151,17 +151,18 @@ export default function CreateQuotePage() {
       // 总价 = 单价 × 数量
       const totalPrice = unitPrice * parseInt(quantity);
       
+      console.log(`  单价 = $${unitPrice.toFixed(2)}`);
       console.log(`  总价 = $${unitPrice.toFixed(2)} * ${quantity} = $${totalPrice.toFixed(2)}`);
       console.log('========== 浏览器端价格计算结束 ==========');
       
-      // 仍然调用服务器端API获取最终价格（保持一致性）
-      const serverPrice = await calculateItemPrice(itemData);
+      // 仍然调用服务器端API获取单价（保持一致性）
+      const serverUnitPrice = await calculateItemPrice(itemData);
       
-      console.log(`服务器端计算结果: $${parseFloat(serverPrice).toFixed(2)}`);
-      console.log(`客户端计算结果: $${Math.round(totalPrice)}`);
-      console.log('计算结果是否一致:', Math.round(totalPrice) === serverPrice);
+      console.log(`服务器端单价: $${parseFloat(serverUnitPrice).toFixed(2)}`);
+      console.log(`客户端单价: $${Math.round(unitPrice)}`);
+      console.log('单价计算是否一致:', Math.round(unitPrice) === serverUnitPrice);
       
-      return serverPrice;
+      return serverUnitPrice;
     } catch (error) {
       console.error('客户端价格计算失败:', error);
       return await calculateItemPrice(itemData);
