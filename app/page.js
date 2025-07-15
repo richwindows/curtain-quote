@@ -253,11 +253,10 @@ export default function CreateQuotePage() {
       
       if (data.success) {
         const originalAmount = items.reduce((sum, item) => sum + item.totalPrice, 0);
-        const finalAmount = getDiscountPercentage() > 0 ? getDiscountedTotal() : originalAmount;
         setResult({
           success: true,
           quoteNumber: data.quoteNumber,
-          totalPrice: parseFloat(finalAmount).toFixed(2),
+          totalPrice: parseFloat(originalAmount).toFixed(2),
           message: 'Quote saved successfully!'
         });
         // 清空所有数据
@@ -323,18 +322,6 @@ export default function CreateQuotePage() {
 
   const getTotalQuoteAmount = () => {
     return items.reduce((sum, item) => sum + item.totalPrice, 0);
-  };
-
-  const getDiscountPercentage = () => {
-    const discountValues = Object.values(discountConfig);
-    return discountValues.length > 0 ? discountValues[0] : 0;
-  };
-
-  const getDiscountedTotal = () => {
-    const originalTotal = getTotalQuoteAmount();
-    const discountPercent = getDiscountPercentage();
-    const discountAmount = (originalTotal * discountPercent) / 100;
-    return originalTotal - discountAmount;
   };
 
   return (
@@ -612,11 +599,6 @@ export default function CreateQuotePage() {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-900">Quote Items ({items.length})</h3>
             <div className="text-right">
-              {getDiscountPercentage() > 0 && (
-                <div className="text-xs text-gray-500 mb-1">
-                  Discount: {getDiscountPercentage()}%
-                </div>
-              )}
               <div className="text-lg font-bold text-gray-900">
                 Total: ${parseFloat(getTotalQuoteAmount()).toFixed(2)}
               </div>
