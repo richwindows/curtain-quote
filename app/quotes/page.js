@@ -337,6 +337,7 @@ export default function QuotesPage() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">产品</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">规格</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">尺寸</th>
@@ -348,6 +349,9 @@ export default function QuotesPage() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {selectedQuoteDetails.map((item, index) => (
                         <tr key={item.id || `item-${index}`}>
+                          <td className="px-4 py-4 text-sm text-gray-900">
+                            {item.location || '-'}
+                          </td>
                           <td className="px-4 py-4 text-sm text-gray-900">
                             <div>
                               <div className="font-medium">{item.product}</div>

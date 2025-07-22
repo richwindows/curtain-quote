@@ -8,6 +8,7 @@ export default function CreateQuotePage() {
     phone: '',
     email: '',
     address: '',
+    location: '', // 新增
     product: '',
     valance: '',
     valance_color: '',
@@ -255,6 +256,7 @@ export default function CreateQuotePage() {
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
+        location: formData.location,
         items: items,
         _timestamp: Date.now()
       };
@@ -287,6 +289,7 @@ export default function CreateQuotePage() {
           phone: '',
           email: '',
           address: '',
+          location: '',
           product: '',
           valance: '',
           valance_color: '',
@@ -325,6 +328,7 @@ export default function CreateQuotePage() {
       phone: '',
       email: '',
       address: '',
+      location: '',
       product: '',
       valance: '',
       valance_color: '',
@@ -430,6 +434,19 @@ export default function CreateQuotePage() {
           <div>
             <h3 className="text-lg font-medium text-gray-900 mb-4">Product Requirements</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* 新增 Location 字段 */}
+              <div>
+                <label className="form-label">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="form-input"
+                  placeholder="Optional location/room"
+                />
+              </div>
+              {/* Product 字段及后续字段保持原顺序 */}
               <div>
                 <label className="form-label">Product *</label>
                 <select
@@ -538,6 +555,20 @@ export default function CreateQuotePage() {
               </div>
 
               <div>
+                <label className="form-label">Motor Price ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="motor_price"
+                  value={formData.motor_price}
+                  onChange={handleChange}
+                  className="form-input"
+                  min="0"
+                  placeholder="Optional motor price"
+                />
+              </div>
+
+              <div>
                 <label className="form-label">Width (inch) *</label>
                 <input
                   type="number"
@@ -565,19 +596,7 @@ export default function CreateQuotePage() {
                 />
               </div>
 
-              <div>
-                <label className="form-label">Motor Price ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="motor_price"
-                  value={formData.motor_price}
-                  onChange={handleChange}
-                  className="form-input"
-                  min="0"
-                  placeholder="Optional motor price"
-                />
-              </div>
+             
 
               <div>
                 <label className="form-label">Quantity *</label>
@@ -630,6 +649,7 @@ export default function CreateQuotePage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specs</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dimensions</th>
@@ -642,6 +662,9 @@ export default function CreateQuotePage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {items.map((item) => (
                   <tr key={item.id}>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.location || '-'}
+                    </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
                         <div className="font-medium">{item.product}</div>
@@ -699,4 +722,4 @@ export default function CreateQuotePage() {
       )}
     </div>
   );
-} 
+}

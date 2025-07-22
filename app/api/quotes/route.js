@@ -17,6 +17,7 @@ export async function POST(request) {
           phone: quoteData.phone || '',
           email: quoteData.email || '',
           address: quoteData.address || '',
+          location: quoteData.location || '',
           quote_number: quoteNumber, // 使用相同的quote_number
           ...item
         };
@@ -158,4 +159,4 @@ export async function DELETE(request) {
 // 强制动态渲染，禁用所有缓存
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const revalidate = 0; 
+export const revalidate = 0;

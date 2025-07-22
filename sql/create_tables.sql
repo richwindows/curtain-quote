@@ -9,6 +9,7 @@ CREATE TABLE quotes (
     phone TEXT,
     email TEXT,
     address TEXT,
+    location TEXT,
     product TEXT NOT NULL,
     valance TEXT NOT NULL,
     valance_color TEXT NOT NULL,
@@ -32,3 +33,6 @@ CREATE INDEX idx_quotes_customer_name ON quotes(customer_name);
 
 -- 为了确保quote_number的唯一性和递增，创建一个序列
 CREATE SEQUENCE IF NOT EXISTS quote_number_seq START 10001; 
+
+
+ALTER TABLE quotes ADD COLUMN location TEXT;
