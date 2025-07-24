@@ -137,11 +137,20 @@ export default function QuotesPage() {
     return new Date(dateString).toLocaleString();
   };
 
-  const formatDimensions = (width, height) => {
-    // 将英寸转换为平方米: 1 inch = 0.0254 meters
-    const areaSquareInches = parseFloat(width) * parseFloat(height);
-    const areaSquareMeters = areaSquareInches * 0.0254 * 0.0254;
-    return `${parseFloat(width).toFixed(3)}" × ${parseFloat(height).toFixed(3)}" (${areaSquareMeters.toFixed(4)} ㎡)`;
+  const formatDimensions = (item) => {
+    // 根据数据库中存储的单位数据进行显示
+    if (item.width_m && item.height_m) {
+      // 显示米单位数据
+      const areaSquareMeters = parseFloat(item.width_m) * parseFloat(item.height_m);
+      return `${parseFloat(item.width_m).toFixed(3)}m × ${parseFloat(item.height_m).toFixed(3)}m (${areaSquareMeters.toFixed(4)} ㎡)`;
+    } else if (item.width_inch && item.height_inch) {
+      // 显示英寸单位数据，并转换为平方米显示面积
+      const areaSquareInches = parseFloat(item.width_inch) * parseFloat(item.height_inch);
+      const areaSquareMeters = areaSquareInches * 0.0254 * 0.0254;
+      return `${parseFloat(item.width_inch).toFixed(3)}" × ${parseFloat(item.height_inch).toFixed(3)}" (${areaSquareMeters.toFixed(4)} ㎡)`;
+    } else {
+      return 'N/A';
+    }
   };
 
   if (isLoading && quotes.length === 0) {
@@ -188,15 +197,12 @@ export default function QuotesPage() {
                       </span>
                     </div>
                     
-                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
                       <div>
                         <span className="font-medium">客户:</span> {quote.customer_name || 'N/A'}
                       </div>
                       <div>
                         <span className="font-medium">电话:</span> {quote.phone || 'N/A'}
-                      </div>
-                      <div>
-                        <span className="font-medium">产品摘要:</span> {quote.products_summary}
                       </div>
                       <div>
                         <span className="font-medium">创建时间:</span> {formatDate(quote.created_at)}
@@ -373,7 +379,7 @@ export default function QuotesPage() {
                             </div>
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-900">
-                            {formatDimensions(item.width_inch, item.height_inch)}
+                            {formatDimensions(item)}
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-900">
                             {item.quantity}
@@ -471,4 +477,4 @@ export default function QuotesPage() {
       )}
     </div>
   );
-} 
+}

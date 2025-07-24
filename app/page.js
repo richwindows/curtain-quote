@@ -18,9 +18,14 @@ export default function CreateQuotePage() {
     fabric_price: '',
     motor_price: '',
     width_inch: '',
+    width_m: '',
     height_inch: '',
+    height_m: '',
     quantity: '1'
   });
+
+  // 单位状态：'ft' 为英制，'m' 为公制
+  const [unit, setUnit] = useState('inch');
 
   const [options, setOptions] = useState({
     products: [],
@@ -100,7 +105,9 @@ export default function CreateQuotePage() {
       
       const {
         width_inch,
+        width_m,
         height_inch,
+        height_m,
         product,
         valance,
         valance_color,
@@ -115,9 +122,30 @@ export default function CreateQuotePage() {
       console.log('========== 浏览器端价格计算开始 ==========');
       console.log('原始数据:', itemData);
       
-      // 将英寸转换为米 (1 inch = 0.0254 meters)
-      const widthMeters = parseFloat(width_inch) * 0.0254;
-      const heightMeters = parseFloat(height_inch) * 0.0254;
+      // 根据四个字段计算米值
+      let widthMeters, heightMeters;
+      
+      // 处理宽度：优先使用米值，如果没有则转换英寸值
+      if (width_m && parseFloat(width_m) > 0) {
+        widthMeters = parseFloat(width_m);
+        console.log(`宽度: ${parseFloat(width_m).toFixed(3)} m (直接使用米值)`);
+      } else if (width_inch && parseFloat(width_inch) > 0) {
+        widthMeters = parseFloat(width_inch) * 0.0254; // 英寸转米
+        console.log(`宽度: ${parseFloat(width_inch).toFixed(3)} inches = ${widthMeters.toFixed(4)}m`);
+      } else {
+        throw new Error('请提供宽度值');
+      }
+      
+      // 处理高度：优先使用米值，如果没有则转换英寸值
+      if (height_m && parseFloat(height_m) > 0) {
+        heightMeters = parseFloat(height_m);
+        console.log(`高度: ${parseFloat(height_m).toFixed(3)} m (直接使用米值)`);
+      } else if (height_inch && parseFloat(height_inch) > 0) {
+        heightMeters = parseFloat(height_inch) * 0.0254; // 英寸转米
+        console.log(`高度: ${parseFloat(height_inch).toFixed(3)} inches = ${heightMeters.toFixed(4)}m`);
+      } else {
+        throw new Error('请提供高度值');
+      }
       
       // 计算面积（平方米）
       const areaSquareMeters = widthMeters * heightMeters;
@@ -125,9 +153,9 @@ export default function CreateQuotePage() {
       // 面积小于1平方米按1平方米计算
       const billableArea = Math.max(areaSquareMeters, 1);
       
-      console.log('尺寸转换:');
-      console.log(`  宽度: ${parseFloat(width_inch).toFixed(3)}" = ${widthMeters.toFixed(4)}m`);
-      console.log(`  高度: ${parseFloat(height_inch).toFixed(3)}" = ${heightMeters.toFixed(4)}m`);
+      console.log('最终尺寸:');
+      console.log(`  宽度: ${widthMeters.toFixed(4)}m`);
+      console.log(`  高度: ${heightMeters.toFixed(4)}m`);
       console.log(`  实际面积: ${areaSquareMeters.toFixed(4)} 平方米`);
       console.log(`  计费面积: ${billableArea.toFixed(4)} 平方米 ${billableArea > areaSquareMeters ? '(最小1平方米)' : ''}`);
       
@@ -199,7 +227,7 @@ export default function CreateQuotePage() {
     
     try {
       // 验证必填字段
-      const requiredFields = ['product', 'valance', 'valance_color', 'bottom_rail', 'control', 'fabric', 'width_inch', 'height_inch', 'quantity'];
+      const requiredFields = ['product', 'valance', 'valance_color', 'bottom_rail', 'control', 'fabric', 'quantity'];
       for (const field of requiredFields) {
         if (!formData[field]) {
           setResult({
@@ -210,14 +238,31 @@ export default function CreateQuotePage() {
           return;
         }
       }
+      
+      // 验证尺寸字段（根据当前单位）
+      const widthField = unit === 'inch' ? 'width_inch' : 'width_m';
+      const heightField = unit === 'inch' ? 'height_inch' : 'height_m';
+      if (!formData[widthField] || !formData[heightField]) {
+        setResult({
+          success: false,
+          error: `请填写宽度和高度`
+        });
+        setIsAddingItem(false);
+        return;
+      }
 
       // 计算价格 - 在浏览器console显示详细过程
       const itemPrice = await calculatePriceWithDetails(formData);
       
-      // 创建item对象
+      // 创建item对象，只传递当前单位的尺寸数据
       const newItem = {
         id: Date.now(), // 临时ID
-        ...formData,
+        ...formData, // 使用原始表单数据
+        // 只传递当前单位的尺寸字段，让后端进行转换
+        width_inch: unit === 'inch' ? formData.width_inch : undefined,
+        width_m: unit === 'm' ? formData.width_m : undefined,
+        height_inch: unit === 'inch' ? formData.height_inch : undefined,
+        height_m: unit === 'm' ? formData.height_m : undefined,
         unitPrice: itemPrice,
         totalPrice: itemPrice * parseInt(formData.quantity)
       };
@@ -299,7 +344,9 @@ export default function CreateQuotePage() {
           fabric_price: '',
           motor_price: '',
           width_inch: '',
-          height_inch: '',
+    width_m: '',
+    height_inch: '',
+    height_m: '',
           quantity: '1'
         });
       } else {
@@ -569,37 +616,69 @@ export default function CreateQuotePage() {
               </div>
 
               <div>
-                <label className="form-label">Width (inch) *</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Width ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => setUnit('inch')}
+                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                        unit === 'inch' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      inch
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUnit('m')}
+                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                        unit === 'm' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      m
+                    </button>
+                  </div>
+                </div>
                 <input
                   type="number"
                   step="0.001"
-                  name="width_inch"
-                  value={formData.width_inch}
+                  name={unit === 'inch' ? 'width_inch' : 'width_m'}
+                  value={unit === 'inch' ? formData.width_inch : formData.width_m}
                   onChange={handleChange}
                   className="form-input"
                   required
                   min="0.001"
+                  placeholder={unit === 'inch' ? 'Enter width in inches' : 'Enter width in meters'}
                 />
               </div>
 
               <div>
-                <label className="form-label">Height (inch) *</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Height ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
+                  <div className="h-9 p-1"></div>
+                </div>
                 <input
                   type="number"
                   step="0.001"
-                  name="height_inch"
-                  value={formData.height_inch}
+                  name={unit === 'inch' ? 'height_inch' : 'height_m'}
+                  value={unit === 'inch' ? formData.height_inch : formData.height_m}
                   onChange={handleChange}
                   className="form-input"
                   required
                   min="0.001"
+                  placeholder={unit === 'inch' ? 'Enter height in inches' : 'Enter height in meters'}
                 />
               </div>
 
-             
-
               <div>
-                <label className="form-label">Quantity *</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Quantity *</label>
+                  <div className="h-9 p-1"></div>
+                </div>
                 <input
                   type="number"
                   name="quantity"
@@ -666,10 +745,7 @@ export default function CreateQuotePage() {
                       {item.location || '-'}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>
-                        <div className="font-medium">{item.product}</div>
-                        <div className="text-gray-500">{item.fabric}</div>
-                      </div>
+                      <div className="font-medium">{item.product}</div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="space-y-1">
@@ -677,13 +753,44 @@ export default function CreateQuotePage() {
                         <div>Color: {item.valance_color}</div>
                         <div>Rail: {item.bottom_rail}</div>
                         <div>Control: {item.control}</div>
+                        <div>Fabric: {item.fabric}</div>
+                        {item.fabric_price && <div>Fabric Price: ${parseFloat(item.fabric_price).toFixed(2)}</div>}
+                        {item.motor_price && <div>Motor Price: ${parseFloat(item.motor_price).toFixed(2)}</div>}
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {parseFloat(item.width_inch).toFixed(3)}" × {parseFloat(item.height_inch).toFixed(3)}"
-                      <div className="text-gray-500">
-                        {((parseFloat(item.width_inch) * parseFloat(item.height_inch)) / 144).toFixed(2)} sq ft
-                      </div>
+                      {(() => {
+                        // 根据存储的数据判断单位并显示
+                        if (item.width_m && item.height_m) {
+                          // 米单位数据
+                          const width = parseFloat(item.width_m);
+                          const height = parseFloat(item.height_m);
+                          const area = (width * height).toFixed(4);
+                          return (
+                            <>
+                              {width.toFixed(3)}m × {height.toFixed(3)}m
+                              <div className="text-gray-500">
+                                {area} ㎡
+                              </div>
+                            </>
+                          );
+                        } else if (item.width_inch && item.height_inch) {
+                          // 英寸单位数据
+                          const width = parseFloat(item.width_inch);
+                          const height = parseFloat(item.height_inch);
+                          const area = (width * height * 0.0254 * 0.0254).toFixed(4);
+                          return (
+                            <>
+                              {width.toFixed(3)}" × {height.toFixed(3)}"
+                              <div className="text-gray-500">
+                                {area} ㎡
+                              </div>
+                            </>
+                          );
+                        } else {
+                          return 'NaN × NaN';
+                        }
+                      })()}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.quantity}

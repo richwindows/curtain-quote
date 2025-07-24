@@ -6,7 +6,7 @@ export async function POST(request) {
     const quoteData = await request.json();
     
     // 验证必填字段
-    const requiredFields = ['width_inch', 'height_inch', 'product', 'valance', 'valance_color', 'bottom_rail', 'control', 'fabric', 'quantity'];
+    const requiredFields = ['product', 'valance', 'valance_color', 'bottom_rail', 'control', 'fabric', 'quantity'];
     
     for (const field of requiredFields) {
       if (!quoteData[field]) {
@@ -15,6 +15,17 @@ export async function POST(request) {
           { status: 400 }
         );
       }
+    }
+    
+    // 验证尺寸字段（至少需要一组有效的尺寸数据）
+    const hasInchData = quoteData.width_inch && quoteData.height_inch;
+    const hasMeterData = quoteData.width_m && quoteData.height_m;
+    
+    if (!hasInchData && !hasMeterData) {
+      return NextResponse.json(
+        { error: 'Missing dimension data: need either inch data or meter data' },
+        { status: 400 }
+      );
     }
 
     // 计算价格
@@ -39,4 +50,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-} 
+}
