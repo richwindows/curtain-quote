@@ -353,9 +353,27 @@ export default function QuotesPage() {
           <div className="relative top-10 mx-auto p-6 border w-11/12 md:w-11/12 lg:w-10/12 xl:w-11/12 max-w-7xl shadow-lg rounded-md bg-white min-h-[80vh]">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3">
-              <h3 className="text-lg font-medium text-gray-900">
-                报价单 #{selectedQuoteNumber} 详情
-              </h3>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  报价单 #{selectedQuoteNumber} 详情
+                </h3>
+                {selectedQuoteDetails.length > 0 && (
+                  <div className="text-sm text-gray-600 mt-1">
+                    {selectedQuoteDetails[0].customer_name && (
+                      <span>客户: {selectedQuoteDetails[0].customer_name}</span>
+                    )}
+                    {selectedQuoteDetails[0].phone && (
+                      <span className="ml-4">电话: {selectedQuoteDetails[0].phone}</span>
+                    )}
+                    {selectedQuoteDetails[0].email && (
+                      <span className="ml-4">邮箱: {selectedQuoteDetails[0].email}</span>
+                    )}
+                    {selectedQuoteDetails[0].address && (
+                      <span className="ml-4">地址: {selectedQuoteDetails[0].address}</span>
+                    )}
+                  </div>
+                )}
+              </div>
               <button
                 onClick={closeModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"

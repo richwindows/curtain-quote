@@ -56,17 +56,50 @@ export async function POST(request) {
     
     // 客户信息
     if (hasCustomerInfo) {
-      // 客户信息左侧蓝色竖线
-      doc.setDrawColor(33, 150, 243);
-      doc.setLineWidth(1.5);
-      doc.line(20, yPosition, 20, yPosition + 15);
+      const customerInfoItems = [];
       
-      doc.setFontSize(11);
-      doc.setTextColor(0, 0, 0);
+      // 收集所有可用的客户信息
       if (customerInfo.customer_name) {
-        doc.text(`Customer: ${customerInfo.customer_name}`, 25, yPosition + 5);
+        customerInfoItems.push(`Customer: ${customerInfo.customer_name}`);
       }
-      yPosition += 25;
+      if (customerInfo.email) {
+        customerInfoItems.push(`Email: ${customerInfo.email}`);
+      }
+      if (customerInfo.phone) {
+        customerInfoItems.push(`Phone: ${customerInfo.phone}`);
+      }
+      if (customerInfo.address) {
+        customerInfoItems.push(`Address: ${customerInfo.address}`);
+      }
+      
+      if (customerInfoItems.length > 0) {
+        const numberOfRows = Math.ceil(customerInfoItems.length / 2);
+        const customerInfoHeight = numberOfRows * 12 + 10;
+        
+        // 客户信息左侧蓝色竖线
+        doc.setDrawColor(33, 150, 243);
+        doc.setLineWidth(1.5);
+        doc.line(20, yPosition, 20, yPosition + customerInfoHeight - 5);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        
+        // 两个信息一行显示
+        for (let i = 0; i < customerInfoItems.length; i += 2) {
+          const rowIndex = Math.floor(i / 2);
+          const yPos = yPosition + 8 + (rowIndex * 12);
+          
+          // 左侧信息
+          doc.text(customerInfoItems[i], 25, yPos);
+          
+          // 右侧信息（如果存在）
+          if (customerInfoItems[i + 1]) {
+            doc.text(customerInfoItems[i + 1], 120, yPos);
+          }
+        }
+        
+        yPosition += customerInfoHeight;
+      }
     }
     
     // 表格开始
