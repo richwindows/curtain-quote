@@ -131,7 +131,7 @@ export default function QuotesPage() {
   const generatePDF = async (quoteNumber, quoteDetails) => {
     setIsGeneratingPdf(true);
     try {
-      const response = await fetch('/api/quotes/generate-pdf', {
+      const response = await fetch('/api/quotes/generate-pdf-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
