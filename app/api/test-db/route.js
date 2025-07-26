@@ -16,15 +16,22 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         error: error.message,
-        details: error
+        details: error,
+        code: error.code
       });
     }
+    
+    // 检查表结构
+    const columns = data && data.length > 0 ? Object.keys(data[0]) : [];
     
     return NextResponse.json({
       success: true,
       message: 'Database connection successful',
       sampleData: data,
-      count: data?.length || 0
+      count: data?.length || 0,
+      columns: columns,
+      hasInstallationType: columns.includes('installation_type'),
+      hasRolling: columns.includes('rolling')
     });
     
   } catch (error) {
@@ -35,4 +42,4 @@ export async function GET() {
       stack: error.stack
     }, { status: 500 });
   }
-} 
+}

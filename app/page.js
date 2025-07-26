@@ -17,6 +17,8 @@ export default function CreateQuotePage() {
     fabric: '',
     fabric_price: '',
     motor_price: '',
+    installation_type: '', // 新增
+    rolling: '', // 新增
     width_inch: '',
     width_m: '',
     height_inch: '',
@@ -32,7 +34,9 @@ export default function CreateQuotePage() {
     valances: [],
     valanceColors: [],
     bottomRails: [],
-    controls: []
+    controls: [],
+    installationTypes: [],
+    rollings: []
   });
   
   const [discountConfig, setDiscountConfig] = useState({});
@@ -62,7 +66,9 @@ export default function CreateQuotePage() {
         valances: Object.keys(config.valancePrices || {}),
         valanceColors: Object.keys(config.valanceColorPrices || {}),
         bottomRails: Object.keys(config.bottomRailPrices || {}),
-        controls: Object.keys(config.controlPrices || {})
+        controls: Object.keys(config.controlPrices || {}),
+        installationTypes: Object.keys(config.installationTypes || {}),
+        rollings: Object.keys(config.rollings || {})
       });
       setDiscountConfig(config.discount || {});
     } catch (error) {
@@ -343,10 +349,12 @@ export default function CreateQuotePage() {
           fabric: '',
           fabric_price: '',
           motor_price: '',
+          installation_type: '',
+          rolling: '',
           width_inch: '',
-    width_m: '',
-    height_inch: '',
-    height_m: '',
+          width_m: '',
+          height_inch: '',
+          height_m: '',
           quantity: '1'
         });
       } else {
@@ -384,8 +392,12 @@ export default function CreateQuotePage() {
       fabric: '',
       fabric_price: '',
       motor_price: '',
+      installation_type: '',
+      rolling: '',
       width_inch: '',
+      width_m: '',
       height_inch: '',
+      height_m: '',
       quantity: '1'
     });
     setItems([]);
@@ -483,7 +495,10 @@ export default function CreateQuotePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* 新增 Location 字段 */}
               <div>
-                <label className="form-label">Location</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Location</label>
+                  <div className="h-9 p-1"></div>
+                </div>
                 <input
                   type="text"
                   name="location"
@@ -491,6 +506,65 @@ export default function CreateQuotePage() {
                   onChange={handleChange}
                   className="form-input"
                   placeholder="Optional location/room"
+                />
+              </div>
+
+                           <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Width ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => setUnit('inch')}
+                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                        unit === 'inch' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      inch
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUnit('m')}
+                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                        unit === 'm' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      m
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="number"
+                  step="0.001"
+                  name={unit === 'inch' ? 'width_inch' : 'width_m'}
+                  value={unit === 'inch' ? formData.width_inch : formData.width_m}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  min="0.001"
+                  placeholder={unit === 'inch' ? 'Enter width in inches' : 'Enter width in meters'}
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Height ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
+                  <div className="h-9 p-1"></div>
+                </div>
+                <input
+                  type="number"
+                  step="0.001"
+                  name={unit === 'inch' ? 'height_inch' : 'height_m'}
+                  value={unit === 'inch' ? formData.height_inch : formData.height_m}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  min="0.001"
+                  placeholder={unit === 'inch' ? 'Enter height in inches' : 'Enter height in meters'}
                 />
               </div>
               {/* Product 字段及后续字段保持原顺序 */}
@@ -616,69 +690,37 @@ export default function CreateQuotePage() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="form-label mb-0">Width ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
-                  <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => setUnit('inch')}
-                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                        unit === 'inch' 
-                          ? 'bg-white text-blue-600 shadow-sm' 
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
-                    >
-                      inch
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setUnit('m')}
-                      className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                        unit === 'm' 
-                          ? 'bg-white text-blue-600 shadow-sm' 
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
-                    >
-                      m
-                    </button>
-                  </div>
-                </div>
-                <input
-                  type="number"
-                  step="0.001"
-                  name={unit === 'inch' ? 'width_inch' : 'width_m'}
-                  value={unit === 'inch' ? formData.width_inch : formData.width_m}
+                <label className="form-label">Installation Type</label>
+                <select
+                  name="installation_type"
+                  value={formData.installation_type}
                   onChange={handleChange}
                   className="form-input"
-                  required
-                  min="0.001"
-                  placeholder={unit === 'inch' ? 'Enter width in inches' : 'Enter width in meters'}
-                />
+                >
+                  <option value="">Select Installation Type</option>
+                  {options.installationTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="form-label mb-0">Height ({unit === 'inch' ? 'inches' : 'meters'}) *</label>
-                  <div className="h-9 p-1"></div>
-                </div>
-                <input
-                  type="number"
-                  step="0.001"
-                  name={unit === 'inch' ? 'height_inch' : 'height_m'}
-                  value={unit === 'inch' ? formData.height_inch : formData.height_m}
+                <label className="form-label">Rolling</label>
+                <select
+                  name="rolling"
+                  value={formData.rolling}
                   onChange={handleChange}
                   className="form-input"
-                  required
-                  min="0.001"
-                  placeholder={unit === 'inch' ? 'Enter height in inches' : 'Enter height in meters'}
-                />
+                >
+                  <option value="">Select Rolling</option>
+                  {options.rollings.map(rolling => (
+                    <option key={rolling} value={rolling}>{rolling}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="form-label mb-0">Quantity *</label>
-                  <div className="h-9 p-1"></div>
-                </div>
+                <label className="form-label">Quantity *</label>
                 <input
                   type="number"
                   name="quantity"
@@ -756,6 +798,8 @@ export default function CreateQuotePage() {
                         <div>Fabric: {item.fabric}</div>
                         {item.fabric_price && <div>Fabric Price: ${parseFloat(item.fabric_price).toFixed(2)}</div>}
                         {item.motor_price && <div>Motor Price: ${parseFloat(item.motor_price).toFixed(2)}</div>}
+                        {item.installation_type && <div>Installation: {item.installation_type}</div>}
+                        {item.rolling && <div>Rolling: {item.rolling}</div>}
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">

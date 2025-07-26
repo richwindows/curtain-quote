@@ -151,7 +151,22 @@ export async function POST(request) {
          yPosition = 20;
        }
        
-       const rowHeight = 40;
+       // 动态计算行高，确保能显示所有规格内容
+       const specs = [
+         `Fabric: ${item.fabric}`,
+         `Valance: ${item.valance}`,
+         `Color: ${item.valance_color}`,
+         `Rail: ${item.bottom_rail}`,
+         `Control: ${item.control}`,
+         ...(item.installation_type ? [`Installation: ${item.installation_type}`] : []),
+         ...(item.rolling ? [`Rolling: ${item.rolling}`] : [])
+       ];
+       
+       const minRowHeight = 40;
+       const lineHeight = 4.5;
+       const specLinesNeeded = specs.length;
+       const calculatedHeight = Math.max(minRowHeight, specLinesNeeded * lineHeight + 15);
+       const rowHeight = calculatedHeight;
        
        // 绘制行边框
        doc.setDrawColor(180, 180, 180);
@@ -187,23 +202,14 @@ export async function POST(request) {
        
        // Specifications - 居中对齐，多行显示
        doc.setFontSize(8);
-       const specs = [
-         `Fabric: ${item.fabric}`,
-         `Valance: ${item.valance}`,
-         `Color: ${item.valance_color}`,
-         `Rail: ${item.bottom_rail}`,
-         `Control: ${item.control}`
-       ];
        
-       const totalSpecLines = Math.min(specs.length, 5);
-       const specStartY = yPosition + (rowHeight - totalSpecLines * 5) / 2 + 3;
+       const totalSpecLines = specs.length;
+       const specStartY = yPosition + (rowHeight - totalSpecLines * lineHeight) / 2 + 3;
        let specY = specStartY;
        specs.forEach((spec, specIndex) => {
-         if (specIndex < 5) {
-           doc.setTextColor(0, 0, 0);
-           doc.text(spec, xPosition + colWidths[2] / 2, specY, { align: 'center' });
-           specY += 5;
-         }
+         doc.setTextColor(0, 0, 0);
+         doc.text(spec, xPosition + colWidths[2] / 2, specY, { align: 'center' });
+         specY += lineHeight;
        });
        
      

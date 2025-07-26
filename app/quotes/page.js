@@ -433,6 +433,8 @@ export default function QuotesPage() {
                               {item.motor_price && (
                                 <div className="text-blue-600">Motor: ${parseFloat(item.motor_price).toFixed(2)}</div>
                               )}
+                              {item.installation_type && <div>Installation: {item.installation_type}</div>}
+                              {item.rolling && <div>Rolling: {item.rolling}</div>}
                             </div>
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-900">

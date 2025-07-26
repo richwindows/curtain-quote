@@ -35,6 +35,14 @@ const defaultConfig = {
     'cordless': 0,
     'battery-motorized': 0,
     'wired-motorized': 0
+  },
+  installationTypes: {
+    'Inside': 0,
+    'Outside': 0
+  },
+  rollings: {
+    'Standard': 0,
+    'Reverse': 0
   }
 };
 
@@ -72,7 +80,7 @@ export async function POST(request) {
     const newConfig = await request.json();
     
     // 验证配置格式
-    const requiredKeys = ['discount', 'productPrices', 'valancePrices', 'valanceColorPrices', 'bottomRailPrices', 'controlPrices'];
+    const requiredKeys = ['discount', 'productPrices', 'valancePrices', 'valanceColorPrices', 'bottomRailPrices', 'controlPrices', 'installationTypes', 'rollings'];
     for (const key of requiredKeys) {
       if (!newConfig[key] || typeof newConfig[key] !== 'object') {
         return NextResponse.json(
@@ -111,4 +119,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-} 
+}

@@ -9,7 +9,9 @@ export default function ConfigPage() {
     valancePrices: {},
     valanceColorPrices: {},
     bottomRailPrices: {},
-    controlPrices: {}
+    controlPrices: {},
+    installationTypes: {},
+    rollings: {}
   });
   
   const [isLoading, setIsLoading] = useState(true);
@@ -217,6 +219,12 @@ export default function ConfigPage() {
       {/* Control价格 */}
       {renderConfigSection('Control Types ($)', 'controlPrices', '$', '1')}
 
+      {/* Installation Types */}
+      {renderConfigSection('Installation Types', 'installationTypes', '', '1')}
+
+      {/* Rolling Types */}
+      {renderConfigSection('Rolling Types', 'rollings', '', '1')}
+
       {/* 保存按钮 */}
       <div className="flex justify-end">
         <button
@@ -231,4 +239,4 @@ export default function ConfigPage() {
 
     </div>
   );
-} 
+}
