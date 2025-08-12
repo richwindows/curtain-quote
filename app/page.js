@@ -408,6 +408,24 @@ export default function CreateQuotePage() {
     return items.reduce((sum, item) => sum + item.totalPrice, 0);
   };
 
+  // 添加单位切换处理函数
+  const handleUnitChange = (newUnit) => {
+    // 如果单位没有变化，直接返回
+    if (newUnit === unit) return;
+    
+    // 清空所有尺寸字段，避免混淆
+    setFormData(prev => ({
+      ...prev,
+      width_inch: '',
+      width_m: '',
+      height_inch: '',
+      height_m: ''
+    }));
+    
+    // 更新单位状态
+    setUnit(newUnit);
+  };
+
   return (
     <div className="space-y-6">
       {/* 页面标题 */}
@@ -515,7 +533,7 @@ export default function CreateQuotePage() {
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       type="button"
-                      onClick={() => setUnit('inch')}
+                      onClick={() => handleUnitChange('inch')}
                       className={`px-3 py-1 text-sm rounded-md transition-colors ${
                         unit === 'inch' 
                           ? 'bg-white text-blue-600 shadow-sm' 
@@ -526,7 +544,7 @@ export default function CreateQuotePage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setUnit('m')}
+                      onClick={() => handleUnitChange('m')}
                       className={`px-3 py-1 text-sm rounded-md transition-colors ${
                         unit === 'm' 
                           ? 'bg-white text-blue-600 shadow-sm' 
@@ -874,3 +892,4 @@ export default function CreateQuotePage() {
     </div>
   );
 }
+
